@@ -21,19 +21,19 @@ tic;
         t=time/5;
         dt=t-prev_time;
         vp = -1*t+vp_init;
-        motion = motion + vp*t;
+        motion+=vp*t;
         
       
-        theta=(theta_init-(k*pi*t*t)+vp*t/Length-vp_init*t/Length)/(1-k*t*t);   
+        theta=(theta_init-(k*pi*t*t))/(1-k*t*t);   
         
         lx=Length*cos(theta-(pi/2))+motion;
         ly=Length*sin(theta-(pi/2));
 
-        plot([motion lx],[0 ly],'b','Linewidth',1);   
+        plot([0 lx],[0 ly],'b','Linewidth',1);   
         %rectangle('Curvature',[1,1],'Position',[lx-0.05,ly-0.05,0.1,0.1],'FaceColor','b');
         viscircles([lx,ly],Length/20,'EdgeColor','b','LineWidth',1);
         
-        axis([-Length-1+motion Length+1+motion -Length-1 Length+1])
+        axis([-Length-1 Length+1 -Length-1 Length+1])
 
         pause(0.01);
         
