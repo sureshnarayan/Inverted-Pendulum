@@ -5,6 +5,7 @@ clf
 Length = 1;
 Mass = 15;
 g=9.81;
+c=0.00001;
 
 k=g/Length;
 theta_init=pi/18;
@@ -14,7 +15,8 @@ tic;
 
     while t<=5
         t=toc;
-        theta = (theta_init)*cos(t*sqrt(k));         
+        %theta = (theta_init*(exp(-c*t)*k/c+1/t))/(1/t+(k/c));         
+        theta = (theta_init)*cos(t*sqrt(k));   
         
         lx=Length*cos(theta-(pi/2));
         ly=Length*sin(theta-(pi/2));
