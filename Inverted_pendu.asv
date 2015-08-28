@@ -2,44 +2,53 @@
 clear
 clf
 
-Length = 10;
+Length = 1;
 Mass = 15;
 g=9.81;
 vp_init=0;
 
+%system parameters
 k=g/Length;
-rk=root(k);
-theta_init=pi+0.01;
+%rk=sqrt(k); %used when undamped
+theta_init=0.01;
+c=1;
+
+%specific solution parameters 
+p=[1 c -k];
+r=roots(p);
+A=[r(1) r(2);1 1];
+B=[0;theta_init];
+C=linsolve(A,B);
 
 t=0;
-
+%motion of the platform
 motion=0;
 prev_time=0;
 tic;
 
-    while t<=5
-        time=toc;
-        t=time;
+    while t<=15
+        t=toc;
         dt=t-prev_time;
         vp = 0*t+vp_init;
         motion = motion + vp*t;
         
       
-        %theta=(theta_init-(k*pi*t*t)+vp*t/Length-vp_init*t/Length)/(1-k*t*t);   
-        theta=theta_init/2*(exp(rk*t)+exp(-rk
+        theta_i = C(1)*exp(r(1)*t)+C(2)*exp(r(2)*t);  %for damped systems    
+        %theta=theta_init/2*(exp(rk*t)+exp(-rk*t));  %for undamped system
+        theta= real(theta_i);
         
+        %plotting 
         lx=Length*cos(theta+(pi/2))+motion;
         ly=Length*sin(theta+(pi/2));
 
         plot([motion lx],[0 ly],'b','Linewidth',1);   
-        %rectangle('Curvature',[1,1],'Position',[lx-0.05,ly-0.05,0.1,0.1],'FaceColor','b');
         viscircles([lx,ly],Length/20,'EdgeColor','b','LineWidth',1);
         
         axis([-Length-1+motion Length+1+motion -Length-1 Length+1])
 
         pause(0.01);
         
-        if theta<pi/2 || theta>3*pi/2
+        if theta>pi/2 || theta<-pi/2
             break;
         end
         prev_time=t;

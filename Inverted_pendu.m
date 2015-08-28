@@ -2,16 +2,16 @@
 clear
 clf
 
-Length = 10;
+Length = 1;
 Mass = 15;
 g=9.81;
 vp_init=0;
 
-%system constants
+%system parameters
 k=g/Length;
 %rk=sqrt(k); %used when undamped
 theta_init=0.01;
-c=0;
+c=1;
 
 %specific solution parameters 
 p=[1 c -k];
@@ -32,7 +32,7 @@ tic;
         vp = 0*t+vp_init;
         motion = motion + vp*t;
         
-      
+        %angle as a function of time
         theta_i = C(1)*exp(r(1)*t)+C(2)*exp(r(2)*t);  %for damped systems    
         %theta=theta_init/2*(exp(rk*t)+exp(-rk*t));  %for undamped system
         theta= real(theta_i);
