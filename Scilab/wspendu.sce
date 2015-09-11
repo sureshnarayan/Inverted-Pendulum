@@ -8,11 +8,14 @@ tic()
 da=gda();
     da.auto_clear="on";
     da.data_bounds=[-len/2,-1-len;len/2,0.5];
-    da.x_location="origin";
+    da.x_location="bottom";
     da.y_location="left";
     da.axes_visible="on";
     da.auto_clear = "on"
-    
+    da.box="off";
+    da.grid=[2,2];
+    da.grid_style=[9,9]
+    da.grid_thickness=[1,1]
 
 //axes resets every time it enters the loop
 while time<5 //run time of the simulation
@@ -20,7 +23,6 @@ while time<5 //run time of the simulation
 //^^^^^^Do not disturb^^^^^^
     a=gca();                //to reduce blinking//due to resetting
     a.auto_clear = 'on'     //to clear the graph after calc(time consuming)
-//    a.axes_visible="off";
 //^^^^^^^^^^^^^^^^^^^^^^^^^^
     time=toc();
 
@@ -49,11 +51,8 @@ while time<5 //run time of the simulation
     //xarc(x-rad/2,y+rad/2,rad,rad,0,360*64);
     ////xfarc(x-rad/2,y+rad/2,rad,rad,0,360*64);
     
-    //a.data_bounds=[-len/2,-1-len;len/2,0.5];
-    //a.x_location="origin";
-    //a.y_location="left";
-//    a.axes_visible="on";
+
     drawnow();
-    
+    sleep(20)
 end
 
