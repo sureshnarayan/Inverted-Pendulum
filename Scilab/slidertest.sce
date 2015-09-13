@@ -16,7 +16,7 @@ handles.motion=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Ena
 
 function motion_callback(handles)
 //Write your callback for  motion  here
-
+disp(handles.motion.value);
 endfunction
 
-
+funcprot(0);
