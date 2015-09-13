@@ -7,12 +7,13 @@ tic()
     c = scf(100002);
 da=gda();
     da.auto_clear="on";
-    da.data_bounds=[-len/2,-1-len;len/2,0.5];
+    da.data_bounds=[-len,-1-len;len,0.5];
     da.x_location="origin";
     da.y_location="left";
     da.axes_visible="on";
-    da.auto_clear = "on"
-    
+    da.auto_clear = "on";
+    da.auto_scale = "off";
+    da.isoview = "on";
 
 //axes resets every time it enters the loop
 while time<5 //run time of the simulation
@@ -20,6 +21,7 @@ while time<5 //run time of the simulation
 //^^^^^^Do not disturb^^^^^^
     a=gca();                //to reduce blinking//due to resetting
     a.auto_clear = 'on'     //to clear the graph after calc(time consuming)
+//    a.auto_scale = "off";
 //    a.axes_visible="off";
 //^^^^^^^^^^^^^^^^^^^^^^^^^^
     time=toc();

@@ -1,13 +1,13 @@
 //Simple Pendulum
 g=9.81
-len = 10;
+len = 1;
 iangle = %pi/6;
 time=0
 tic()
     c = scf(100002);
 da=gda();
     da.auto_clear="on";
-    da.data_bounds=[-len/2,-1-len;len/2,0.5];
+    da.data_bounds=[-len,-1-len;len,0.5];
     da.x_location="bottom";
     da.y_location="left";
     da.axes_visible="on";
@@ -15,10 +15,12 @@ da=gda();
     da.box="off";
     da.grid=[2,2];
     da.grid_style=[9,9]
-    da.grid_thickness=[1,1]
+    da.grid_thickness=[1,1];
+    da.auto_scale = "off";
+    da.isoview = "on";
 
 //axes resets every time it enters the loop
-while time<5 //run time of the simulation
+while time<10 //run time of the simulation
     
 //^^^^^^Do not disturb^^^^^^
     a=gca();                //to reduce blinking//due to resetting
@@ -34,11 +36,11 @@ while time<5 //run time of the simulation
     y=len*sin(-1*%pi/2+angle);
     
 //Plotting starts here
-    xpoly([0,0],[0,0]);//in order to ease the previous plot(autoclear)
+    xpoly([0,0],[0,0]);//in order to erase the previous plot(autoclear)
     drawlater();
     a.auto_clear = 'off'//hold on
     //+++++++++Add here+++++++++++
-    //dont use 'plot' anywhere as it tris to rescale the axis
+    //dont use 'plot' anywhere as it tries to rescale the axis
     
     //----------------------------
     xpoly([0,x],[0,y]);

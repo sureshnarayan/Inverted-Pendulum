@@ -40,11 +40,13 @@ tic;
         %plotting 
         lx=Length*cos(theta+(pi/2))+motion;
         ly=Length*sin(theta+(pi/2));
+        
 
         plot([motion lx],[0 ly],'b','Linewidth',1);   
         viscircles([lx,ly],Length/20,'EdgeColor','b','LineWidth',1);
         
         axis([-Length-1+motion Length+1+motion -Length-1 Length+1])
+        grid on;
 
         pause(0.01);
         
