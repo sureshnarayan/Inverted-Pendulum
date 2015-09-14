@@ -32,7 +32,7 @@ delmenu(f.figure_id,gettext('?'))
 delmenu(f.figure_id,gettext('Tools'))
 toolbar(f.figure_id,'off')
 handles.dummy = 0;
-handles.motion=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[2],'Min',[-2],'Position',[0.096875,0.0020833,0.803125,0.0979167],'Relief','solid','SliderStep',[0.01,0.1],'String','motion','Style','slider','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','motion','Callback','motion_callback(handles)')
+handles.motion=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[3],'Min',[-3],'Position',[0.096875,0.0020833,0.803125,0.0979167],'Relief','solid','SliderStep',[0.01,0.1],'String','motion','Style','slider','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','motion','Callback','motion_callback(handles)')
 
 
 //////////
@@ -56,7 +56,6 @@ da=gda();
     da.data_bounds=[-3*Length,-Length-1;3*Length,Length+1];
 
 a=newaxes(f)
-//a=gda();
     a.auto_clear="on";
 //    a.data_bounds=[-2*Length+motion,-Length-1;2*Length+motion,Length+1];
     a.tight_limits="on";
@@ -70,7 +69,7 @@ a=newaxes(f)
     a.grid_thickness=[1,1];
     a.auto_scale = "off";
     a.isoview = "on";
-
+    a.margins = [0.125,0.125,0.125,0.15]
     
     
 tic()
