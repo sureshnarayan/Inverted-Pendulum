@@ -1,6 +1,6 @@
 funcprot(0);
 //Simple Pendulum
-Length = 1;
+Length = 10;
 Mass = 1;
 g=9.81;
 vp_init=0;
@@ -9,7 +9,10 @@ t=0
 //system parameters
 k=g/Length;
 //rk=sqrt(k); //used when undamped
-theta_init=0.01;
+theta_init=0.1;
+theta1=0;
+theta2=0;
+theta=0
 c=1;
 
 //specific solution parameters 
@@ -32,7 +35,7 @@ delmenu(f.figure_id,gettext('?'))
 delmenu(f.figure_id,gettext('Tools'))
 toolbar(f.figure_id,'off')
 handles.dummy = 0;
-handles.motion=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[3],'Min',[-3],'Position',[0.096875,0.0020833,0.803125,0.0979167],'Relief','solid','SliderStep',[0.01,0.1],'String','motion','Style','slider','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','motion','Callback','motion_callback(handles)')
+handles.motion=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[10],'Min',[-10],'Position',[0.096875,0.0020833,0.803125,0.0979167],'Relief','solid','SliderStep',[0.01,0.1],'String','motion','Style','slider','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','motion','Callback','motion_callback(handles)')
 
 
 //////////
@@ -42,18 +45,22 @@ handles.motion=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Ena
 function motion_callback(handles)
 //Write your callback for  motion  here
 global data;
-motion=handles.motion.value;
+motion=handles.motion.value/10;
 t=toc();
 dt=t-data(1);
-vp=(motion-data(2))/dt;
-ap=(vp-data(3))/dt;
-data=[t,motion,vp,ap];//storing actual time,position,velocity,acceleration
-disp(ap);
-
+if dt then
+    vp=(motion-data(2))/dt;
+    ap=(vp-data(3))/dt;
+    //if abs(ap)>10 then
+        //ap=data(4)
+    //end
+    data=[t,motion,vp,ap];//storing actual time,position,velocity,acceleration
+    disp(ap);
+end
 endfunction
 
 da=gda();
-    da.data_bounds=[-3*Length,-Length-1;3*Length,Length+1];
+    da.data_bounds=[-3*Length,-0.2;3*Length,Length+1];
 
 a=newaxes(f)
     a.auto_clear="on";
@@ -74,25 +81,32 @@ a=newaxes(f)
     
 tic()
 t1=0;
+prev_time=0;
 //axes resets every time it enters the loop
 //------------------------------------------------------------------
-while t<10 //run time of the simulation
+while t<20 //run time of the simulation
 
 //^^^^^^Do not disturb^^^^^^
 //    a=gca();                //to reduce blinking//due to resetting
     a.auto_clear = 'on'     //to clear the graph after calc(time consuming)
 //^^^^^^^^^^^^^^^^^^^^^^^^^^
     t=toc();
+    dt=t-prev_time;
+    prev_time=t;
 
 //Equation comes here
         //angle as a function of time
-        theta_im = C(1)*exp(r(1)*t)+C(2)*exp(r(2)*t);  //for damped systems    
+        //theta_comp = C(1)*exp(r(1)*dt)+C(2)*exp(r(2)*dt);  //for damped systems
+        //theta_dt = C(1)*exp(r(1)*t)+C(2)*exp(r(2)*t);
         //theta=theta_init/2*(exp(rk*t)+exp(-rk*t));  //for undamped system
-        theta= real(theta_im);
+        //theta_comp= real(theta_im);
+        theta1=theta1*exp(r(1)*dt)+data(4)*C(1)/Length*dt;
+        theta2=theta2*exp(r(2)*dt)+data(4)*C(2)/Length*dt;
+        theta=real(theta1+theta2);
 
 //Getting coordinates of points
-        lx=Length*cos(theta+(%pi/2))+data(2);
-        ly=Length*sin(theta+(%pi/2));
+        lx=Length*cos(real(theta)+(%pi/2))+data(2);
+        ly=Length*sin(real(theta)+(%pi/2));
     
 //Plotting starts here
     xpoly([0,0],[0,0]);//in order to erase the previous plot(autoclear)
@@ -118,6 +132,7 @@ while t<10 //run time of the simulation
             break
         end;
         prev_time=t;
-    sleep(20)
+                //theta=theta*exp(dt)+(data(4)/Length)*theta_comp*dt;
+    //sleep(20)
 end
 
