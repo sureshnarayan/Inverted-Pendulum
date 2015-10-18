@@ -1,13 +1,17 @@
 funcprot(0);
-global pid exit_flag Length colour;
-pid=[10,100,0];
+global pid exit_flag Length colour theta_init erase_plot;
+pid=[10,100,5];
 exit_flag=0;
 Length = 10;
 colour=1;
 data=[0,0,0,0];
+theta_init=-0.1;
+erase_plot=1;
+
+
 
 function main()
-global('data','pid','c','k','r','C','ks','cs','theta','Length','f','a','rtp','da','stop_flag','exit_flag','colour','handles');
+global('data','pid','c','k','r','C','ks','cs','theta','Length','f','a','rtp','da','stop_flag','exit_flag','colour','handles','theta_init');
 Mass = 1;
 g=9.81;
 vp_init=0;
@@ -18,7 +22,7 @@ ks=g/Length;
 //ks=-1
 c=cs;
 k=ks;
-theta_init=0.1;
+
 stop_flag=0;
 //colour=modulo(int(10*rand()),10);
 
@@ -79,10 +83,12 @@ while stop_flag==0 //run time of the simulation
         thetasum=thetasum+theta*dt;
         if dt then
             dtheta=(theta-prev_theta)/dt;
-        vp=-1*((pid(1)*theta)+(pid(2)*thetasum)+(pid(3)*dtheta));
+        //vp=-1*((pid(1)*theta)+(pid(2)*thetasum)+(pid(3)*dtheta));
         //data(4)=(vp-data(3))/(Length*dt);
-        data(3)=vp;
-        data(2)=data(2)+vp*dt;
+        
+        //data(3)=vp;
+        //data(2)=data(2)+vp*dt;
+        data(2)=real(-1*(theta1*(pid(3)+pid(1)/r(1)+pid(2)/((r(1))^2))+theta2*(pid(3)+pid(1)/r(2)+pid(2)/((r(2))^2))))
         handles.motion.value=data(2);
         end
     
@@ -109,7 +115,16 @@ drawlater();
     //plot the graph
     sca(rtp)
     //plot(t,theta,'b.');
-    xsegs([t-dt,t],[prev_theta,theta],colour);
+    xpoly([t-dt,t],[prev_theta,theta]);
+    seg=gce();
+    seg.foreground=modulo(colour,10)
+    if t-dt then
+       datatipRemove(segt);
+    end
+    segt=datatipCreate(seg,2);
+    //datatipSetOrientation(segt,"lower left");
+
+    //plot(t,vp,'b.');
 drawnow();
         if theta>%pi/2|theta<-1*%pi/2 then
             break
@@ -187,13 +202,15 @@ a=newaxes(f)
     a.tight_limits=["off","off","off"];
 
 handles.dummy = 0;
+handles.theta_init_text=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.375,0.8,0.13,0.05],'Relief','default','SliderStep',[0.01,0.1],'String','$\theta_{initial}=\qquad\ radians$','Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','theta_init_text','Callback','')
+handles.theta_init=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.425,0.8,0.03,0.05],'Relief','default','SliderStep',[0.01,0.1],'String',string(theta_init),'Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','theta_init','Callback','')
 handles.motionl=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.035,0.09,0.03,0.05],'Relief','default','SliderStep',[0.01,0.1],'String','-10','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','off','Tag','motionl','Callback','')
 handles.motionh=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.455,0.09,0.03,0.05],'Relief','default','SliderStep',[0.01,0.1],'String','+10','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','off','Tag','motionh','Callback','')
 handles.motion=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[evstr(handles.motionh.string)],'Min',[evstr(handles.motionl.string)],'Position',[0.065,0.06,0.39,0.1],'Relief','default','SliderStep',[0.01,0.1],'String','motion','Style','slider','Value',[data(2)],'VerticalAlignment','middle','Visible','on','Tag','motion','Callback','motion_callback(handles)')
 handles.kpl=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.61,0.325,0.04,0.05],'Relief','default','SliderStep',[0.01,0.1],'String','-100','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','kpl','Callback','')
 handles.kph=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.952,0.325,0.04,0.05],'Relief','default','SliderStep',[0.01,0.1],'String','+100','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','kph','Callback','')
-handles.kil=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.61,0.185,0.04,0.05],'Relief','default','SliderStep',[0.01,0.1],'String','-100','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','kil','Callback','')
-handles.kih=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.952,0.185,0.04,0.05],'Relief','default','SliderStep',[0.01,0.1],'String','+100','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','kih','Callback','')
+handles.kil=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.61,0.185,0.04,0.05],'Relief','default','SliderStep',[0.01,0.1],'String','-500','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','kil','Callback','')
+handles.kih=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.952,0.185,0.04,0.05],'Relief','default','SliderStep',[0.01,0.1],'String','+500','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','kih','Callback','')
 handles.kdl=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.61,0.045,0.04,0.05],'Relief','default','SliderStep',[0.01,0.1],'String','-10','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','kdl','Callback','')
 handles.kdh=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.952,0.045,0.04,0.05],'Relief','default','SliderStep',[0.01,0.1],'String','+10','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','kdh','Callback','')
 handles.kp=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[evstr(handles.kph.string)],'Min',[evstr(handles.kpl.string)],'Position',[0.65,0.3,0.3,0.1],'Relief','raised','SliderStep',[0.01,0.1],'String','kp','Style','slider','Value',[pid(1)],'VerticalAlignment','middle','Visible','on','Tag','kp','Callback','kp_callback(handles)')
@@ -202,12 +219,12 @@ handles.kd=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable'
 handles.reset=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.49,0.15,0.1,0.1],'Relief','raised','SliderStep',[0.01,0.1],'String','$RESET$','Style','pushbutton','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','reset','Callback','reset_callback(handles)')
 handles.close=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.49,0.05,0.1,0.1],'Relief','raised','SliderStep',[0.01,0.1],'String','$CLOSE$','Style','pushbutton','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','close','Callback','close_callback(handles)')
 handles.stop=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.49,0.25,0.1,0.1],'Relief','raised','SliderStep',[0.01,0.1],'String','$STOP$','Style','pushbutton','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','stop','Callback','stop_callback(handles)')
-handles.kptext=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.78,0.38,0.03,0.04],'Relief','default','SliderStep',[0.01,0.1],'String','$K_P$','Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','kptext','Callback','')
-handles.kitext=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.78,0.24,0.03,0.04],'Relief','default','SliderStep',[0.01,0.1],'String','$K_I$','Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','kitext','Callback','')
-handles.kdtext=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.78,0.1,0.03,0.04],'Relief','default','SliderStep',[0.01,0.1],'String','$K_D$','Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','kdtext','Callback','')
+handles.kptext=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.77,0.38,0.05,0.04],'Relief','default','SliderStep',[0.01,0.1],'String','Kp='+string(pid(1)),'Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','kptext','Callback','')
+handles.kitext=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.77,0.24,0.05,0.04],'Relief','default','SliderStep',[0.01,0.1],'String','Ki='+string(pid(2)),'Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','kitext','Callback','')
+handles.kdtext=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.77,0.1,0.05,0.04],'Relief','default','SliderStep',[0.01,0.1],'String','Kd='+string(pid(3)),'Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','kdtext','Callback','')
 handles.pidtext=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[16],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.775,0.42,0.04,0.04],'Relief','default','SliderStep',[0.01,0.1],'String','$PID$','Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','pidtext','Callback','')
 handles.titletext=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[25],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.13,0.86,0.25,0.08],'Relief','default','SliderStep',[0.01,0.1],'String','$Inverted\ Pendulum$','Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','titletext','Callback','')
-
+handles.erase=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.891,0.95,0.06,0.04],'Relief','default','SliderStep',[0.01,0.1],'String','Erase plot','Style','checkbox','Value',[erase_plot],'VerticalAlignment','middle','Visible','on','Tag','erase','Callback','erase_callback(handles)')
 
 
 //////////
@@ -218,6 +235,7 @@ function kp_callback(handles)
 //Write your callback for  kp  here
 global pid;
 pid(1)=handles.kp.value
+handles.kptext.string="Kp="+string(pid(1))
 calc_init();
 endfunction
 
@@ -226,6 +244,7 @@ function ki_callback(handles)
 //Write your callback for  ki  here
 global pid;
 pid(2)=handles.ki.value
+handles.kitext.string="Ki="+string(pid(2))
 calc_init();
 endfunction
 
@@ -234,6 +253,7 @@ function kd_callback(handles)
 //Write your callback for  kd  here
 global pid;
 pid(3)=handles.kd.value
+handles.kdtext.string="Kd="+string(pid(3))
 calc_init();
 endfunction
 
@@ -257,14 +277,29 @@ if dt then
 end
 endfunction
 
+function erase_callback(handles)
+//Write your callback for  erase  here
+global erase_plot;
+erase_plot=handles.erase.value;
+endfunction
+
 function reset_callback(handles)
 //Write your callback for  reset  here
-global rtp colour handles pid da Length a;
-    //sca(rtp);
-    //rtp.auto_clear="on";
-    //plot(0,0);
-colour=colour+1;
-mprintf("Loop %d \n",colour);
+global rtp colour handles pid da Length a theta_init erase_plot;
+if erase_plot==1 then
+    sca(rtp);
+    rtp.auto_clear="on";
+    plot(0,0);
+else
+    colour=colour+1;
+end 
+    rtp.title.text="$\theta\ vs\ Time$";
+    rtp.title.font_size = 4;
+    rtp.x_label.text="$time$";
+    rtp.y_label.text="$\theta$";
+    rtp.data_bounds=[0,-0.3;2,0.3];
+//mprintf("Loop %d \n",colour);
+theta_init=evstr(handles.theta_init.string)
 handles.kp.max=evstr(handles.kph.string)
 handles.kp.min=evstr(handles.kpl.string)
 handles.ki.max=evstr(handles.kih.string)
@@ -298,4 +333,5 @@ stop_flag=1;
 endfunction
 
 
-//main()
+
+main()
